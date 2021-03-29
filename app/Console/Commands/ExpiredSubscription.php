@@ -68,7 +68,7 @@ class ExpiredSubscription extends Command
 
         if ($subscriptionCount) {
             $offset += $subscriptionCount;
-            $lastId = 5;
+            $lastId = $subscriptions->last()->id;
 
             unset($subscription);
             unset($subscriptions);
