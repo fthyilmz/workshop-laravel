@@ -56,7 +56,13 @@ class ExpiredSubscription extends Command
             $query->where('id', '>=', $lastId);
         }
 
-        $subscriptions = $query->offset($offset)->limit($limit)->get();
+        $subscriptionQuery = $query->limit($limit);
+
+        if (! $lastId) {
+            $subscriptionQuery->offset($offset);
+        }
+
+        $subscriptions = $subscriptionQuery->get();
 
         foreach ($subscriptions as $subscription) {
             $queue = new CheckSubscriptionStatus($subscription->token);
@@ -67,7 +73,6 @@ class ExpiredSubscription extends Command
         $subscriptionCount = $subscriptions->count();
 
         if ($subscriptionCount) {
-            $offset += $subscriptionCount;
             $lastId = $subscriptions->last()->id;
 
             unset($subscription);
